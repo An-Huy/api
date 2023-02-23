@@ -9,4 +9,4 @@ class Settings(BaseSettings):
     POSTGRES_HOSTNAME: str
 
     class Config:
-        env_file = '/home/huynda/api/.env'
+        env_file = '/root/api/.env'

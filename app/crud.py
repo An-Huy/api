@@ -48,6 +48,7 @@ async def add_salary(salary: schemas.AddSalary, db: "database.Session") -> schem
     db.refresh(salary)
     return schemas.Contact.from_orm(salary)
 
+'''
 async def get_salary_by_employee_id(employee_id: int, db: "database.Session") -> schemas.Salary:
     salary = db.query(models.Salary).filter(models.Salary.owner == employee_id).first()
     return salary
@@ -61,3 +62,4 @@ async def update_salary(salary_data: schemas.AddContact, salary: schemas.Contact
     db.refresh(salary)
 
     return schemas.Salary.from_orm(salary)
+'''

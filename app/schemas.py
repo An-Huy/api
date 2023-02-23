@@ -19,8 +19,10 @@ class Contact(ContactBase):
 
 class SalaryBase(BaseModel):
     gross_pay: int
+    bonus_payment: int
     payroll_deductions: int
     Reason: str
+    net_pay: int
 
 class AddSalary(SalaryBase):
     pass
