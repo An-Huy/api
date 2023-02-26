@@ -1,5 +1,5 @@
-from datetime import datetime
 import schemas, models, database
+from sqlalchemy import column
 from typing import List
 
 def get_db():
@@ -17,8 +17,16 @@ async def add_employee(contact: schemas.AddContact, db: "database.Session") -> s
     db.refresh(contact)
     return schemas.Contact.from_orm(contact)
 
-async def get_all_employees(db: "database.Session") -> List[schemas.Contact]:
-    contacts = db.query(models.Contact).all()
+def convert_columns(columns):
+    return list(map(lambda x: column(x), columns.split('-')))
+
+async def get_all_employees(db: "database.Session", page: int = 1, limit: int = 10) -> List[schemas.Contact]:
+                            #, columns: str = None) -> List[schemas.Contact]:
+    '''  
+    if columns is not None and columns != "all":
+        contacts = db.query(models.Contact, columns=convert_columns(columns))
+    '''
+    contacts = db.query(models.Contact).offset(page).limit(limit).all()
     return list(map(schemas.Contact.from_orm, contacts))
 
 async def get_employee_by_id(employee_id: int, db: "database.Session") -> schemas.Contact:
@@ -41,25 +49,19 @@ async def update_contact(employee_data: schemas.AddContact, employee: schemas.Co
     return schemas.Contact.from_orm(employee)
 
     '''-------------------------------- Salary Section --------------------------------'''
-async def add_salary(salary: schemas.AddSalary, db: "database.Session") -> schemas.Salary: 
-    salary = models.Salary(**salary.dict())
+
+async def add_salary(salary: schemas.AddSalary, db: "database.Session", employee_id: int) -> schemas.Salary: 
+    salary = models.Salary(**salary.dict(), employee_id = employee_id)
     db.add(salary)
     db.commit()
     db.refresh(salary)
-    return schemas.Contact.from_orm(salary)
+    return schemas.Salary.from_orm(salary)
 
-'''
-async def get_salary_by_employee_id(employee_id: int, db: "database.Session") -> schemas.Salary:
-    salary = db.query(models.Salary).filter(models.Salary.owner == employee_id).first()
-    return salary
-
-async def update_salary(salary_data: schemas.AddContact, salary: schemas.Contact, db: "database.Session") -> schemas.Salary:
-    salary.gross_pay = salary_data.gross_pay
-    salary.payroll_deductions = salary_data.payroll_deductions
-    salary.Reason = salary_data.Reason
+async def update_salary(salary_data: schemas.AddSalary, salary: schemas.Salary, db: "database.Session") -> schemas.Salary:
+    salary.note = salary_data.note
+    salary.salary = salary_data.salary
 
     db.commit()
     db.refresh(salary)
 
     return schemas.Salary.from_orm(salary)
-'''

@@ -10,20 +10,17 @@ class Contact(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, index=True)
     last_name = Column(String, index=True)
+    sex = Column(String, index=True)
     email = Column(String, index=True, unique=True)
     phone_number = Column(String, index=True, unique=True)
     time = Column(DateTime, default=datetime.utcnow)
-    #salary = relationship("Salary", back_populates="owner")
+    salary = relationship("Salary", back_populates="employee")
 
 class Salary(Base):
     __tablename__ = "Salary"
-    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,default=uuid.uuid4)  
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)  
     employee_id = Column(Integer, ForeignKey("Employees.id"))
-    gross_pay= Column(Integer, index=True)
-    bonus_payment = Column(Integer, index=True)
-    payroll_deductions = Column(Integer, index=True)
-    Reason = Column(String, index=True)
-    net_pay = Column(Integer, index=True ) 
+    note = Column(String, index=True)
+    salary = Column(Integer, index=True ) 
     time = Column(DateTime, default=datetime.utcnow)
-    owner = relationship("Contact")
-
+    employee = relationship("Contact", back_populates="salary")

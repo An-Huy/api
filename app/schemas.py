@@ -4,6 +4,7 @@ from datetime import datetime
 class ContactBase(BaseModel):
     first_name: str 
     last_name: str 
+    sex: str
     email: str
     phone_number: str
 
@@ -18,18 +19,15 @@ class Contact(ContactBase):
         orm_mode = True
 
 class SalaryBase(BaseModel):
-    gross_pay: int
-    bonus_payment: int
-    payroll_deductions: int
-    Reason: str
-    net_pay: int
+    note: str
+    salary: int
 
 class AddSalary(SalaryBase):
     pass
 
 class Salary(SalaryBase):
     id: int
-    owner_id: int
+    employee_id: int
     time: datetime
 
     class Config:
