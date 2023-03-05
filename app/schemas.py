@@ -1,9 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
+
 
 class ContactBase(BaseModel):
-    first_name: str 
-    last_name: str 
+    name: str 
     sex: str
     email: str
     phone_number: str
@@ -27,7 +28,7 @@ class AddSalary(SalaryBase):
 
 class Salary(SalaryBase):
     id: int
-    employee_id: int
+    owner_id: int
     time: datetime
 
     class Config:

@@ -1,5 +1,4 @@
 import schemas, models, database
-from sqlalchemy import column
 from typing import List
 
 def get_db():
@@ -10,48 +9,40 @@ def get_db():
         db.close()
 
     '''-------------------------------- Employee Section --------------------------------'''
-async def add_employee(contact: schemas.AddContact, db: "database.Session") -> schemas.Contact: 
+async def add_contact(contact: schemas.AddContact, db: "database.Session") -> schemas.Contact: 
     contact = models.Contact(**contact.dict())
     db.add(contact)
     db.commit()
     db.refresh(contact)
     return schemas.Contact.from_orm(contact)
 
-def convert_columns(columns):
-    return list(map(lambda x: column(x), columns.split('-')))
-
-async def get_all_employees(db: "database.Session", page: int = 1, limit: int = 10) -> List[schemas.Contact]:
-                            #, columns: str = None) -> List[schemas.Contact]:
-    '''  
-    if columns is not None and columns != "all":
-        contacts = db.query(models.Contact, columns=convert_columns(columns))
-    '''
+async def get_all_contacts(db: "database.Session", page: int = 1, limit: int = 10) -> List[schemas.Contact]:
     contacts = db.query(models.Contact).offset(page).limit(limit).all()
     return list(map(schemas.Contact.from_orm, contacts))
 
-async def get_employee_by_id(employee_id: int, db: "database.Session") -> schemas.Contact:
-    employee = db.query(models.Contact).filter(models.Contact.id == employee_id).first()
+async def get_contact_by_id(owner_id: int, db: "database.Session") -> schemas.Contact:
+    employee = db.query(models.Contact).filter(models.Contact.id == owner_id).first()
     return employee
 
-async def delete_employee(employee: models.Contact, db: "database.Session") -> schemas.Contact:
-    db.delete(employee)
+async def delete_contact(contact: models.Contact, db: "database.Session") -> schemas.Contact:
+    db.delete(contact)
     db.commit()
 
-async def update_contact(employee_data: schemas.AddContact, employee: schemas.Contact, db: "database.Session") -> schemas.Contact:
-    employee.first_name = employee_data.first_name
-    employee.last_name = employee_data.last_name
-    employee.email = employee_data.email
-    employee.phone_number = employee_data.phone_number
+async def update_contact(contact_data: schemas.AddContact, contact: schemas.Contact, db: "database.Session") -> schemas.Contact:
+    contact.first_name = contact_data.first_name
+    contact.last_name = contact_data.last_name
+    contact.email = contact_data.email
+    contact.phone_number = contact_data.phone_number
 
     db.commit()
-    db.refresh(employee)
+    db.refresh(contact)
 
-    return schemas.Contact.from_orm(employee)
+    return schemas.Contact.from_orm(contact)
 
     '''-------------------------------- Salary Section --------------------------------'''
 
-async def add_salary(salary: schemas.AddSalary, db: "database.Session", employee_id: int) -> schemas.Salary: 
-    salary = models.Salary(**salary.dict(), employee_id = employee_id)
+async def add_salary(salary: schemas.AddSalary, db: "database.Session", owner_id: int) -> schemas.Salary: 
+    salary = models.Salary(**salary.dict(), owner_id = owner_id)
     db.add(salary)
     db.commit()
     db.refresh(salary)
